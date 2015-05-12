@@ -89,5 +89,7 @@ sudo mkdir /var/log/kafka
 sudo chmod -u=rwx /var/log/kafka
 sudo chmod -u=rwx /opt/kafka/bin/kafka-server-start.sh
 
+wget http://central.maven.org/maven2/org/apache/kafka/kafka-perf_2.10/0.8.0/kafka-perf_2.10-0.8.0.jar
+mv kafka-perf_2.10-0.8.0.jar /opt/kafka/libs/
 cd /opt/kafka
 sudo bin/kafka-server-start.sh config/server.properties &
