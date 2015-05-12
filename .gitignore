@@ -158,7 +158,7 @@ dmp-hadoop/.project
 dmp-hadoop/.settings
 dmp-hadoop/dmp-hadoop.iml
 dmp-hadoop/target
-/dmp.iml
+/*.iml
 /target
 /temp
 temp-lucy-vagrant/.vagrant

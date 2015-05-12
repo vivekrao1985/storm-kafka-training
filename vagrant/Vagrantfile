@@ -1,0 +1,45 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "centos64"
+  config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210.box"
+
+  config.vm.provider :virtualbox do |vbox|
+    # NAT through the host so we can use the VPN connection to get to nexus.videologygroup.com
+    vbox.name = "dmp-dev-training"
+    vbox.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+
+    vbox.memory = 1024
+    vbox.cpus = 2
+  end
+
+  config.vm.network "private_network", ip: "192.168.25.2"
+
+  # Zookeeper
+  config.vm.network :forwarded_port, guest: 2181, host: 2181
+
+  config.vm.synced_folder "../", "/srv/codebase"
+  config.vm.synced_folder "~/.m2", "/srv/m2"
+
+  config.vm.provision "shell", path: "provision.sh", privileged: false
+  config.ssh.forward_x11 = true
+
+  # Storm
+  config.vm.network :forwarded_port, guest: 8081, host: 18080
+
+  # Kafka
+  config.vm.network :forwarded_port, guest: 9092, host: 9092
+
+  if Vagrant.has_plugin?("vagrant-cachier")
+    # More info on http://fgrehm.viewdocs.io/vagrant-cachier/usage
+
+    # Configure cached packages to be shared between instances of the same base box.
+    config.cache.scope = :box
+
+    config.cache.enable :generic, { name: "wget", cache_dir: "/var/cache/wget" }
+  end
+end
