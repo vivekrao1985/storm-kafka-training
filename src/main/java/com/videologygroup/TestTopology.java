@@ -1,5 +1,10 @@
 package com.videologygroup;
 
+import backtype.storm.Config;
+import backtype.storm.LocalCluster;
+import backtype.storm.StormSubmitter;
+import backtype.storm.generated.AlreadyAliveException;
+import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.topology.TopologyBuilder;
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
@@ -41,18 +46,44 @@ public class TestTopology {
                         .withDescription("consumer group name to use")
                         .isRequired(true)
                         .create("c"));
+        options.addOption(
+                OptionBuilder.withArgName("mode")
+                        .hasArgs()
+                        .withValueSeparator(' ')
+                        .withDescription("local|cluster - local mode or cluster mode")
+                        .isRequired(true)
+                        .create("m"));
         return options;
     }
 
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws AlreadyAliveException, InvalidTopologyException {
         final Options options = setupOptions();
         final CommandLine commandLineArgs;
         try {
             commandLineArgs = new GnuParser().parse(options, args);
             final TopologyBuilder topologyBuilder = new TopologyBuilder();
             // setup spout
+            final ZkHosts zkHosts = new ZkHosts("localhost");
+            final SpoutConfig spoutConfig = new SpoutConfig(zkHosts,
+                    commandLineArgs.getOptionValue("n"),
+                    commandLineArgs.getOptionValue("o"),
+                    commandLineArgs.getOptionValue("c"));
+            final TopologyBuilder builder = new TopologyBuilder();
+            final KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
+            final String kafkaSpoutName = "spout";
+            builder.setSpout(kafkaSpoutName, kafkaSpout, 5);
             // setup bolt(s)
-        } catch (final ParseException e) {
+            final TestBolt testBolt = new TestBolt();
+            builder.setBolt("bolt", testBolt).shuffleGrouping(kafkaSpoutName);
+
+            final Config config = new Config();
+            if (options.hasOption("m") && "cluster".equals(commandLineArgs.getOptionValue("m"))) {
+                StormSubmitter.submitTopology("test-topology", config, builder.createTopology());
+            } else {
+                final LocalCluster localCluster = new LocalCluster();
+                localCluster.submitTopology("test-topology", config, builder.createTopology());
+            }
+        } catch (final ParseException ex) {
             final HelpFormatter helpFormatter = new HelpFormatter();
             final StringBuilder line = new StringBuilder("java " + TestTopology.class.getName());
 
