@@ -45,7 +45,7 @@ public class TestTopology {
                         .withValueSeparator(' ')
                         .withDescription("consumer group name to use")
                         .isRequired(true)
-                        .create("c"));
+                        .create("g"));
         options.addOption(
                 OptionBuilder.withArgName("mode")
                         .hasArgs()
@@ -61,13 +61,12 @@ public class TestTopology {
         final CommandLine commandLineArgs;
         try {
             commandLineArgs = new GnuParser().parse(options, args);
-            final TopologyBuilder topologyBuilder = new TopologyBuilder();
             // setup spout
             final ZkHosts zkHosts = new ZkHosts("localhost");
             final SpoutConfig spoutConfig = new SpoutConfig(zkHosts,
                     commandLineArgs.getOptionValue("n"),
                     commandLineArgs.getOptionValue("o"),
-                    commandLineArgs.getOptionValue("c"));
+                    commandLineArgs.getOptionValue("g"));
             final TopologyBuilder builder = new TopologyBuilder();
             final KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
             final String kafkaSpoutName = "spout";
