@@ -40,7 +40,7 @@ public class TestTopology {
                         .withValueSeparator(' ')
                         .withDescription("consumer group name to use")
                         .isRequired(true)
-                        .create("c"));
+                        .create("g"));
         return options;
     }
 
