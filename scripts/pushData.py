@@ -9,7 +9,7 @@ def sendMessages(numRecords, topic):
     client = KafkaClient("localhost:9092")
     producer = SimpleProducer(client)
 
-    for x in range(0, int(numRecords) - 1):
+    for x in range(0, int(numRecords)):
         producer.send_messages(topic, "test-" + str(x))
 
 def main(argv):
