@@ -20,5 +20,15 @@
           <artifactId>commons-cli</artifactId>
           <version>1.2</version>
       </dependency>
+    <dependency>
+      <groupId>org.apache.storm</groupId>
+      <artifactId>storm-kafka</artifactId>
+      <version>0.9.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.storm</groupId>
+      <artifactId>storm-core</artifactId>
+      <version>0.9.3</version>
+    </dependency>
   </dependencies>
 </project>
