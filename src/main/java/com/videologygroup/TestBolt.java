@@ -28,6 +28,7 @@ public class TestBolt extends BaseRichBolt {
         final byte[] bytes = tuple.getBinaryByField("bytes");
         final String message = new String(bytes);
         LOG.info(message);
+        this.collector.ack(tuple);
     }
 
     public void declareOutputFields(final OutputFieldsDeclarer outputFieldsDeclarer) {
