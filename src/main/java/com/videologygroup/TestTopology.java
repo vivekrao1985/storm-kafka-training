@@ -41,6 +41,13 @@ public class TestTopology {
                         .withDescription("consumer group name to use")
                         .isRequired(true)
                         .create("g"));
+        options.addOption(
+                OptionBuilder.withArgName("mode")
+                        .hasArgs()
+                        .withValueSeparator(' ')
+                        .withDescription("local|cluster - local mode or cluster mode")
+                        .isRequired(true)
+                        .create("m"));
         return options;
     }
 
